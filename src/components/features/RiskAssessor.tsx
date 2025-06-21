@@ -9,7 +9,6 @@ import { AlertCircle, Loader2, ShieldCheck, ShieldAlert, Map as MapIcon } from '
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import dynamic from 'next/dynamic';
-import type { LatLng } from 'leaflet';
 import { Skeleton } from '../ui/skeleton';
 
 const initialState = {
@@ -19,13 +18,11 @@ const initialState = {
   data: null,
 };
 
-const RiskAssessorMap = dynamic(
-  () => import('./RiskAssessorMap'),
-  {
-    loading: () => <Skeleton className="h-full w-full" />,
-    ssr: false
-  }
-);
+const RiskAssessorMap = dynamic(() => import('@/components/features/RiskAssessorMap'), {
+  ssr: false,
+  loading: () => <Skeleton className="h-full w-full" />,
+});
+
 
 function SubmitButton({ disabled }: { disabled: boolean }) {
   const { pending } = useFormStatus();
@@ -39,7 +36,7 @@ function SubmitButton({ disabled }: { disabled: boolean }) {
 
 export default function RiskAssessor() {
   const [state, formAction] = useActionState(assessRisk, initialState);
-  const [location, setLocation] = useState<LatLng | null>(null);
+  const [location, setLocation] = useState<{ lat: number, lng: number } | null>(null);
 
   const getRiskBadgeVariant = (riskLevel: string) => {
     switch (riskLevel?.toLowerCase()) {
@@ -54,7 +51,7 @@ export default function RiskAssessor() {
 
   return (
     <div className="space-y-4">
-      <form action={formAction as (formData: FormData) => void} className="space-y-4">
+      <form action={formAction} className="space-y-4">
         
         <div className="space-y-2">
             <label className="text-sm font-medium">1. Pin your location on the map</label>
