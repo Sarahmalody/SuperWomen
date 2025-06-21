@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from 'react';
+import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { assessRisk } from '@/app/actions';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,8 +8,8 @@ import { Button } from '@/components/ui/button';
 import { AlertCircle, Loader2, ShieldCheck, ShieldAlert, Map as MapIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import dynamic from 'next/dynamic';
-import { Skeleton } from '../ui/skeleton';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 const initialState = {
   type: null,
@@ -18,16 +18,10 @@ const initialState = {
   data: null,
 };
 
-const RiskAssessorMap = dynamic(() => import('@/components/features/RiskAssessorMap'), {
-  ssr: false,
-  loading: () => <Skeleton className="h-full w-full" />,
-});
-
-
-function SubmitButton({ disabled }: { disabled: boolean }) {
+function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" disabled={disabled || pending} className="w-full">
+    <Button type="submit" disabled={pending} className="w-full">
       {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
       Assess Risk
     </Button>
@@ -36,7 +30,6 @@ function SubmitButton({ disabled }: { disabled: boolean }) {
 
 export default function RiskAssessor() {
   const [state, formAction] = useActionState(assessRisk, initialState);
-  const [location, setLocation] = useState<{ lat: number, lng: number } | null>(null);
 
   const getRiskBadgeVariant = (riskLevel: string) => {
     switch (riskLevel?.toLowerCase()) {
@@ -52,23 +45,27 @@ export default function RiskAssessor() {
   return (
     <div className="space-y-4">
       <form action={formAction as (formData: FormData) => void} className="space-y-4">
-        
-        <div className="space-y-2">
-            <label className="text-sm font-medium">1. Pin your location on the map</label>
-            <div className="h-[250px] w-full rounded-md border bg-muted overflow-hidden">
-                <RiskAssessorMap onLocationSelect={setLocation} />
+        <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+                <Label htmlFor="latitude">Latitude</Label>
+                <Input id="latitude" name="latitude" type="number" step="any" placeholder="e.g., 28.6139" required />
+                {state?.errors?.latitude && (
+                    <p className="text-sm text-destructive mt-1">{state.errors.latitude[0]}</p>
+                )}
             </div>
-            {state?.errors?.latitude && (
-              <p className="text-sm text-destructive mt-1">Please select a location on the map.</p>
-            )}
+            <div className="space-y-2">
+                <Label htmlFor="longitude">Longitude</Label>
+                <Input id="longitude" name="longitude" type="number" step="any" placeholder="e.g., 77.2090" required />
+                {state?.errors?.longitude && (
+                    <p className="text-sm text-destructive mt-1">{state.errors.longitude[0]}</p>
+                )}
+            </div>
         </div>
-        
-        <input type="hidden" name="latitude" value={location?.lat || ''} />
-        <input type="hidden" name="longitude" value={location?.lng || ''} />
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">2. Describe your surroundings</label>
+          <Label htmlFor="locationDescription">Describe your surroundings</Label>
           <Textarea
+            id="locationDescription"
             name="locationDescription"
             placeholder="e.g., 'Walking down a dimly lit alley near Main Street and 3rd Avenue, around 11 PM.'"
             rows={3}
@@ -79,7 +76,7 @@ export default function RiskAssessor() {
             <p className="text-sm text-destructive mt-1">{state.errors.locationDescription[0]}</p>
           )}
         </div>
-        <SubmitButton disabled={!location} />
+        <SubmitButton />
       </form>
 
       {state?.type === 'error' && state.message && (
