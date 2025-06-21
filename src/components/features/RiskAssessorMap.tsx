@@ -16,14 +16,16 @@ const markerIcon = new L.Icon({
   shadowSize: [41, 41]
 });
 
+type Location = { lat: number; lng: number };
+
 // Component to handle map clicks and marker placement
-function LocationPicker({ onLocationSelect }: { onLocationSelect: (loc: L.LatLng) => void }) {
+function LocationPicker({ onLocationSelect }: { onLocationSelect: (loc: Location) => void }) {
   const [position, setPosition] = useState<L.LatLng | null>(null);
 
   const map = useMapEvents({
     click(e) {
       setPosition(e.latlng);
-      onLocationSelect(e.latlng);
+      onLocationSelect({ lat: e.latlng.lat, lng: e.latlng.lng });
       map.flyTo(e.latlng, map.getZoom());
     },
   });
@@ -34,7 +36,7 @@ function LocationPicker({ onLocationSelect }: { onLocationSelect: (loc: L.LatLng
 }
 
 // The main map component
-export default function RiskAssessorMap({ onLocationSelect }: { onLocationSelect: (loc: L.LatLng) => void }) {
+export default function RiskAssessorMap({ onLocationSelect }: { onLocationSelect: (loc: Location) => void }) {
   return (
     <MapContainer
       center={[28.6139, 77.2090]} // Default to New Delhi
