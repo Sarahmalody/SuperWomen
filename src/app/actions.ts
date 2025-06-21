@@ -3,7 +3,7 @@
 
 import { z } from "zod";
 import type { RiskAssessmentOutput } from "@/ai/flows/risk-assessment";
-import { detectFollowing } from "@/ai/flows/follow-detection";
+import { detectFollowing, type FollowDetectionOutput } from "@/ai/flows/follow-detection";
 import { detectDistress } from "@/ai/flows/distress-detection";
 import { generateFakeCallAudio } from "@/ai/flows/bodyguard-flow";
 
@@ -69,8 +69,16 @@ export async function checkFollowing(prevState: any, formData: FormData) {
       };
     }
 
-    const result = await detectFollowing(validatedFields.data);
-    return { type: "success" as const, data: result };
+    // Simulate a delay to mimic an API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    const prototypeResponse: FollowDetectionOutput = {
+        isFollowing: true,
+        explanation: 'Prototype: The system detected anomalies such as unexpected stops and route deviations that match patterns of being followed.',
+        suggestedActions: 'Head to a public, well-lit place. Do not go home directly. Call a trusted contact or emergency services if you feel unsafe.',
+    };
+
+    return { type: "success" as const, data: prototypeResponse };
   } catch (error) {
     console.error("Follow detection failed:", error);
     return { type: "error" as const, message: "Failed to analyze movement data. Please try again." };
