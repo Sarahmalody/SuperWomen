@@ -45,21 +45,12 @@ export default function RiskAssessor() {
   return (
     <div className="space-y-4">
       <form action={formAction as (formData: FormData) => void} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-                <Label htmlFor="latitude">Latitude</Label>
-                <Input id="latitude" name="latitude" type="number" step="any" placeholder="e.g., 28.6139" required />
-                {state?.errors?.latitude && (
-                    <p className="text-sm text-destructive mt-1">{state.errors.latitude[0]}</p>
-                )}
-            </div>
-            <div className="space-y-2">
-                <Label htmlFor="longitude">Longitude</Label>
-                <Input id="longitude" name="longitude" type="number" step="any" placeholder="e.g., 77.2090" required />
-                {state?.errors?.longitude && (
-                    <p className="text-sm text-destructive mt-1">{state.errors.longitude[0]}</p>
-                )}
-            </div>
+        <div className="space-y-2">
+            <Label htmlFor="locationUrl">Paste your location URL</Label>
+            <Input id="locationUrl" name="locationUrl" type="url" placeholder="e.g., https://maps.app.goo.gl/..." required />
+            {state?.errors?.locationUrl && (
+                <p className="text-sm text-destructive mt-1">{state.errors.locationUrl[0]}</p>
+            )}
         </div>
 
         <div className="space-y-2">

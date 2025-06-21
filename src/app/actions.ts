@@ -8,16 +8,14 @@ import { detectDistress } from "@/ai/flows/distress-detection";
 import type { FakeCallOutput } from "@/ai/flows/bodyguard-flow";
 
 const riskSchema = z.object({
-  latitude: z.coerce.number().min(-90).max(90),
-  longitude: z.coerce.number().min(-180).max(180),
+  locationUrl: z.string().url("Please enter a valid URL."),
   locationDescription: z.string().min(1, "Please provide a description."),
 });
 
 export async function assessRisk(prevState: any, formData: FormData) {
   try {
     const validatedFields = riskSchema.safeParse({
-      latitude: formData.get("latitude"),
-      longitude: formData.get("longitude"),
+      locationUrl: formData.get("locationUrl"),
       locationDescription: formData.get("locationDescription"),
     });
 

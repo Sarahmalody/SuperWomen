@@ -12,8 +12,7 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const RiskAssessmentInputSchema = z.object({
-  latitude: z.number().describe('The latitude of the location.'),
-  longitude: z.number().describe('The longitude of the location.'),
+  locationUrl: z.string().url().describe('A URL to a map location, like Google Maps or OpenStreetMap.'),
   locationDescription: z
     .string()
     .describe(
@@ -55,10 +54,10 @@ const riskAssessmentPrompt = ai.definePrompt({
   prompt: `You are a safety expert providing advice based on location risk assessment.
 
   Analyze the following location and provide tailored safety advice.
-  The location is at latitude: {{{latitude}}}, longitude: {{{longitude}}}.
+  The location is at this URL: {{{locationUrl}}}
   User's description of the location: {{{locationDescription}}}
 
-  Consider the user's description as the primary source of truth for immediate surroundings (e.g., "dimly lit", "crowded"). Use the coordinates for broader geographical context.
+  Use the location URL for geographical context and the user's description as the primary source of truth for immediate surroundings (e.g., "dimly lit", "crowded").
 
   Provide the output in JSON format:
   - riskLevel: (e.g., low, medium, high)
