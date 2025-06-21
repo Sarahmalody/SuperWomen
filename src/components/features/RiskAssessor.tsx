@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, useMemo } from 'react';
+import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { assessRisk } from '@/app/actions';
 import { Textarea } from '@/components/ui/textarea';
@@ -19,6 +19,14 @@ const initialState = {
   data: null,
 };
 
+const RiskAssessorMap = dynamic(
+  () => import('./RiskAssessorMap'),
+  {
+    loading: () => <Skeleton className="h-full w-full" />,
+    ssr: false
+  }
+);
+
 function SubmitButton({ disabled }: { disabled: boolean }) {
   const { pending } = useFormStatus();
   return (
@@ -33,14 +41,6 @@ export default function RiskAssessor() {
   const [state, formAction] = useActionState(assessRisk, initialState);
   const [location, setLocation] = useState<LatLng | null>(null);
 
-  const RiskAssessorMap = useMemo(() => dynamic(
-    () => import('./RiskAssessorMap'), 
-    { 
-      loading: () => <Skeleton className="h-full w-full" />,
-      ssr: false 
-    }
-  ), []);
-
   const getRiskBadgeVariant = (riskLevel: string) => {
     switch (riskLevel?.toLowerCase()) {
       case 'high':
@@ -54,7 +54,7 @@ export default function RiskAssessor() {
 
   return (
     <div className="space-y-4">
-      <form action={formAction} className="space-y-4">
+      <form action={formAction as (formData: FormData) => void} className="space-y-4">
         
         <div className="space-y-2">
             <label className="text-sm font-medium">1. Pin your location on the map</label>
