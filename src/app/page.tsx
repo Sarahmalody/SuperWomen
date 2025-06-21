@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from 'react';
-import { Shield, Footprints, Mic, MapPin, SmartphoneNfc, UserRound } from 'lucide-react';
+import { Shield, Footprints, Mic, MapPin, SmartphoneNfc, UserRound, Users } from 'lucide-react';
 import { useShake } from '@/hooks/useShake';
 import SosModal from '@/components/features/SosModal';
 import FeatureCard from '@/components/features/FeatureCard';
@@ -10,6 +10,7 @@ import FollowDetector from '@/components/features/FollowDetector';
 import DistressDetector from '@/components/features/DistressDetector';
 import LocationSharer from '@/components/features/LocationSharer';
 import Bodyguard from '@/components/features/Bodyguard';
+import Superwomen from '@/components/features/Superwomen';
 import { Button } from '@/components/ui/button';
 import { EmergencyButton } from '@/components/features/EmergencyButton';
 
@@ -95,6 +96,14 @@ export default function Home() {
                 description="Monitor your voice for signs of distress via tone and emotion analysis."
               >
                 <DistressDetector />
+              </FeatureCard>
+
+              <FeatureCard
+                title="Super Women Network"
+                icon={<Users className="w-6 h-6 text-primary" />}
+                description="Send an SOS to nearby users in the network."
+              >
+                <Superwomen />
               </FeatureCard>
             </div>
           </div>
