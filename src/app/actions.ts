@@ -2,7 +2,7 @@
 "use server";
 
 import { z } from "zod";
-import { getSafetyAdvice } from "@/ai/flows/risk-assessment";
+import type { RiskAssessmentOutput } from "@/ai/flows/risk-assessment";
 import { detectFollowing } from "@/ai/flows/follow-detection";
 import { detectDistress } from "@/ai/flows/distress-detection";
 import { generateFakeCallAudio } from "@/ai/flows/bodyguard-flow";
@@ -28,12 +28,22 @@ export async function assessRisk(prevState: any, formData: FormData) {
       };
     }
 
-    const result = await getSafetyAdvice({
-      latitude: validatedFields.data.latitude,
-      longitude: validatedFields.data.longitude,
-      locationDescription: validatedFields.data.locationDescription,
-    });
-    return { type: "success" as const, data: result };
+    // Simulate a delay to mimic an API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    const prototypeResponse: RiskAssessmentOutput = {
+        riskLevel: 'Medium',
+        safetyAdvice: [
+          'This is a prototype response for demonstration.',
+          'Always be aware of your surroundings.',
+          'Stick to well-lit and populated areas.',
+          'Have your phone ready in case of an emergency.',
+        ],
+        preferredRoute: 'Stay on Main Street and avoid the poorly lit side streets.',
+        areasToAvoid: ['The alley behind the old factory.', 'The unlit park area after 9 PM.'],
+      };
+
+    return { type: "success" as const, data: prototypeResponse };
   } catch (error) {
     console.error("Risk assessment failed:", error);
     return { type: "error" as const, message: "Failed to get safety advice. Please try again." };
