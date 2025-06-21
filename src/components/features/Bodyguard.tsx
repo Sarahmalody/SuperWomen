@@ -16,6 +16,7 @@ const initialState = {
 };
 
 const dadScript = "Hello beta, are you okay? I was just thinking about you. Make sure you are safe. Let me know when you reach home. Okay? I will call you back later. Bye.";
+const scriptLines = dadScript.split('. ').filter(Boolean);
 
 function SubmitButton({ isCalling, onClick }: { isCalling: boolean, onClick: () => void }) {
   const { pending } = useFormStatus();
@@ -35,45 +36,50 @@ export default function Bodyguard() {
   const [state, formAction] = useActionState(getFakeCall, initialState);
   const [isCalling, setIsCalling] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
+  const [currentLine, setCurrentLine] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const endCall = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
     setIsCalling(false);
     setCallDuration(0);
+    setCurrentLine(0);
   };
 
   useEffect(() => {
-    if (state?.type === 'success' && state.data?.audioDataUri) {
-      const audio = new Audio(state.data.audioDataUri);
-      audioRef.current = audio;
-      
-      audio.play().then(() => {
-        setIsCalling(true);
-        setCallDuration(0);
+    // Check for the 'simulated' flag for prototype mode
+    if (state?.type === 'success' && state.data?.simulated) {
+      setIsCalling(true);
+      setCallDuration(0);
+      setCurrentLine(0);
 
-        timerRef.current = setInterval(() => {
-          setCallDuration(prev => prev + 1);
-        }, 1000);
-
-        audio.onended = () => {
-          endCall();
-        };
-      }).catch(err => {
-        console.error("Audio play failed:", err);
-        setError("Could not play audio. Your browser might be blocking automatic playback.");
-        setIsCalling(false);
-      });
+      timerRef.current = setInterval(() => {
+        setCallDuration(prev => {
+          const newDuration = prev + 1;
+          // Show a new line of the script every 3 seconds
+          if (newDuration > 0 && newDuration % 3 === 0) {
+            setCurrentLine(line => Math.min(line + 1, scriptLines.length - 1));
+          }
+          // End the call after 15 seconds
+          if (newDuration >= 15) {
+            endCall();
+            return 15;
+          }
+          return newDuration;
+        });
+      }, 1000);
     } else if (state?.type === 'error') {
       setError(state.message);
+    }
+    
+    // Cleanup interval on component unmount
+    return () => {
+        if(timerRef.current) {
+            clearInterval(timerRef.current);
+        }
     }
   }, [state]);
 
@@ -86,7 +92,7 @@ export default function Bodyguard() {
 
   if (isCalling) {
     return (
-      <div className="bg-slate-800 p-6 rounded-lg text-white flex flex-col items-center justify-center space-y-6 aspect-[9/16] max-h-[400px]">
+      <div className="bg-slate-800 p-6 rounded-lg text-white flex flex-col items-center justify-between space-y-4 aspect-[9/16] max-h-[400px]">
         <div className="flex flex-col items-center space-y-2">
           <Avatar className="w-24 h-24 border-4 border-slate-600">
             <AvatarImage src="https://placehold.co/100x100.png" data-ai-hint="indian father" />
@@ -98,6 +104,11 @@ export default function Bodyguard() {
              <span>{formatTime(callDuration)}</span>
           </p>
         </div>
+
+        <div className="h-12 flex items-center justify-center text-center text-slate-300 px-4">
+          <p className="transition-opacity duration-500">{scriptLines[currentLine]}</p>
+        </div>
+        
         <div className="w-full pt-4">
            <Button onClick={endCall} variant="destructive" size="lg" className="w-full rounded-full h-16">
               <PhoneOff />

@@ -5,12 +5,12 @@ import { z } from "zod";
 import type { RiskAssessmentOutput } from "@/ai/flows/risk-assessment";
 import { detectFollowing, type FollowDetectionOutput } from "@/ai/flows/follow-detection";
 import { detectDistress } from "@/ai/flows/distress-detection";
-import { generateFakeCallAudio } from "@/ai/flows/bodyguard-flow";
+import type { FakeCallOutput } from "@/ai/flows/bodyguard-flow";
 
 const riskSchema = z.object({
   latitude: z.coerce.number().min(-90).max(90),
   longitude: z.coerce.number().min(-180).max(180),
-  locationDescription: z.string().min(10, "Please provide a more detailed description."),
+  locationDescription: z.string().min(1, "Please provide a description."),
 });
 
 export async function assessRisk(prevState: any, formData: FormData) {
@@ -130,10 +130,20 @@ export async function getFakeCall(prevState: any, formData: FormData) {
             };
         }
 
-        const result = await generateFakeCallAudio(validatedFields.data);
-        return { type: "success" as const, data: result };
+        // Simulate a delay to mimic an API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // This is a prototype response. In a real app, you would use the audioDataUri.
+        // We're returning a dummy URI and a flag to tell the frontend to simulate the call.
+        const prototypeResponse: FakeCallOutput & { simulated?: boolean } = {
+            audioDataUri: "simulated", // This is just a placeholder
+            simulated: true,
+        };
+
+        return { type: "success" as const, data: prototypeResponse };
+
     } catch (error) {
-        console.error("Bodyguard audio generation failed:", error);
-        return { type: "error" as const, message: "Failed to generate bodyguard audio. Please try again." };
+        console.error("Bodyguard prototype failed:", error);
+        return { type: "error" as const, message: "Failed to start simulated call. Please try again." };
     }
 }
