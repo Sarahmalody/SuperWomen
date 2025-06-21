@@ -5,6 +5,7 @@ import { z } from "zod";
 import { getSafetyAdvice } from "@/ai/flows/risk-assessment";
 import { detectFollowing } from "@/ai/flows/follow-detection";
 import { detectDistress } from "@/ai/flows/distress-detection";
+import { generateFakeCallAudio } from "@/ai/flows/bodyguard-flow";
 
 const riskSchema = z.object({
   locationDescription: z.string().min(10, "Please provide a more detailed description."),
@@ -85,5 +86,30 @@ export async function checkDistress(prevState: any, formData: FormData) {
     } catch (error) {
         console.error("Distress detection failed:", error);
         return { type: "error" as const, message: "Failed to analyze audio. Please try again." };
+    }
+}
+
+const bodyguardSchema = z.object({
+    script: z.string().min(1, "Script cannot be empty."),
+});
+
+export async function getFakeCall(prevState: any, formData: FormData) {
+    try {
+        const validatedFields = bodyguardSchema.safeParse({
+            script: formData.get('script'),
+        });
+
+        if (!validatedFields.success) {
+            return {
+                type: "error" as const,
+                errors: validatedFields.error.flatten().fieldErrors,
+            };
+        }
+
+        const result = await generateFakeCallAudio(validatedFields.data);
+        return { type: "success" as const, data: result };
+    } catch (error) {
+        console.error("Bodyguard audio generation failed:", error);
+        return { type: "error" as const, message: "Failed to generate bodyguard audio. Please try again." };
     }
 }

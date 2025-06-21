@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from 'react';
-import { Shield, Footprints, Mic, MapPin, SmartphoneNfc } from 'lucide-react';
+import { Shield, Footprints, Mic, MapPin, SmartphoneNfc, UserRound } from 'lucide-react';
 import { useShake } from '@/hooks/useShake';
 import SosModal from '@/components/features/SosModal';
 import FeatureCard from '@/components/features/FeatureCard';
@@ -9,6 +9,7 @@ import RiskAssessor from '@/components/features/RiskAssessor';
 import FollowDetector from '@/components/features/FollowDetector';
 import DistressDetector from '@/components/features/DistressDetector';
 import LocationSharer from '@/components/features/LocationSharer';
+import Bodyguard from '@/components/features/Bodyguard';
 import { Button } from '@/components/ui/button';
 import { EmergencyButton } from '@/components/features/EmergencyButton';
 
@@ -62,6 +63,14 @@ export default function Home() {
                 description="Get safety advice based on your current location's risk level."
               >
                 <RiskAssessor />
+              </FeatureCard>
+
+              <FeatureCard
+                title="Bodyguard"
+                icon={<UserRound className="w-6 h-6 text-primary" />}
+                description="Simulate a call with an AI companion to feel safer."
+              >
+                <Bodyguard />
               </FeatureCard>
 
               <FeatureCard
