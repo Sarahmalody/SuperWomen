@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useState, useRef, useEffect, useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { checkDistress } from '@/app/actions';
 import { Button } from '@/components/ui/button';
 import { Mic, StopCircle, Loader2, AlertCircle, CheckCircle, ShieldAlert } from 'lucide-react';
@@ -28,7 +28,7 @@ export default function DistressDetector() {
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
 
-  const [state, formAction] = useFormState(checkDistress, initialState);
+  const [state, formAction] = useActionState(checkDistress, initialState);
   const { pending } = useFormStatus();
 
   useEffect(() => {

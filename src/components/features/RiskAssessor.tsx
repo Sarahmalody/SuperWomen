@@ -1,13 +1,13 @@
 "use client";
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useState, useMemo } from 'react';
+import { useFormStatus } from 'react-dom';
 import { assessRisk } from '@/app/actions';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, Loader2, ShieldCheck, ShieldAlert, Map as MapIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import type { LatLng } from 'leaflet';
 import { Skeleton } from '../ui/skeleton';
@@ -30,7 +30,7 @@ function SubmitButton({ disabled }: { disabled: boolean }) {
 }
 
 export default function RiskAssessor() {
-  const [state, formAction] = useFormState(assessRisk, initialState);
+  const [state, formAction] = useActionState(assessRisk, initialState);
   const [location, setLocation] = useState<LatLng | null>(null);
 
   const RiskAssessorMap = useMemo(() => dynamic(

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useState, useRef, useEffect, useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { getFakeCall } from '@/app/actions';
 import { Button } from '@/components/ui/button';
 import { Phone, PhoneOff, Loader2, AlertCircle, Clock } from 'lucide-react';
@@ -32,7 +32,7 @@ function SubmitButton({ isCalling, onClick }: { isCalling: boolean, onClick: () 
 }
 
 export default function Bodyguard() {
-  const [state, formAction] = useFormState(getFakeCall, initialState);
+  const [state, formAction] = useActionState(getFakeCall, initialState);
   const [isCalling, setIsCalling] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
   const [error, setError] = useState<string | null>(null);
