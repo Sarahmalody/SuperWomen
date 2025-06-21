@@ -17,10 +17,10 @@ const initialState = {
 
 const dadScript = "Hello beta, are you okay? I was just thinking about you. Make sure you are safe. Let me know when you reach home. Okay? I will call you back later. Bye.";
 
-function SubmitButton({ isCalling }: { isCalling: boolean }) {
+function SubmitButton({ isCalling, onClick }: { isCalling: boolean, onClick: () => void }) {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" disabled={pending || isCalling} className="w-full">
+    <Button type="submit" disabled={pending || isCalling} className="w-full" onClick={onClick}>
       {pending ? (
         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
       ) : (
@@ -35,26 +35,9 @@ export default function Bodyguard() {
   const [state, formAction] = useFormState(getFakeCall, initialState);
   const [isCalling, setIsCalling] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
+  const [error, setError] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    if (state?.type === 'success' && state.data?.audioDataUri) {
-      const audio = new Audio(state.data.audioDataUri);
-      audioRef.current = audio;
-      audio.play();
-      setIsCalling(true);
-      setCallDuration(0);
-
-      timerRef.current = setInterval(() => {
-        setCallDuration(prev => prev + 1);
-      }, 1000);
-
-      audio.onended = () => {
-        endCall();
-      };
-    }
-  }, [state]);
 
   const endCall = () => {
     if (audioRef.current) {
@@ -67,6 +50,33 @@ export default function Bodyguard() {
     setIsCalling(false);
     setCallDuration(0);
   };
+
+  useEffect(() => {
+    if (state?.type === 'success' && state.data?.audioDataUri) {
+      const audio = new Audio(state.data.audioDataUri);
+      audioRef.current = audio;
+      
+      audio.play().then(() => {
+        setIsCalling(true);
+        setCallDuration(0);
+
+        timerRef.current = setInterval(() => {
+          setCallDuration(prev => prev + 1);
+        }, 1000);
+
+        audio.onended = () => {
+          endCall();
+        };
+      }).catch(err => {
+        console.error("Audio play failed:", err);
+        setError("Could not play audio. Your browser might be blocking automatic playback.");
+        setIsCalling(false);
+      });
+    } else if (state?.type === 'error') {
+      setError(state.message);
+    }
+  }, [state]);
+
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
@@ -101,14 +111,14 @@ export default function Bodyguard() {
     <div className="space-y-4">
       <form action={formAction as (formData: FormData) => void}>
         <input type="hidden" name="script" value={dadScript} />
-        <SubmitButton isCalling={isCalling} />
+        <SubmitButton isCalling={isCalling} onClick={() => setError(null)} />
       </form>
 
-      {state?.type === 'error' && state.message && (
+      {error && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{state.message}</AlertDescription>
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
     </div>

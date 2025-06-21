@@ -44,8 +44,8 @@ const bodyguardFlow = ai.defineFlow(
         responseModalities: ['AUDIO'],
         speechConfig: {
           voiceConfig: {
-            // Antares is described as a mature male voice. This is a best effort for "Indian dad voice".
-            prebuiltVoiceConfig: {voiceName: 'Antares'},
+            // Alkaid is described as a mature male voice. This is a best effort for "Indian dad voice".
+            prebuiltVoiceConfig: {voiceName: 'Alkaid'},
           },
         },
       },
