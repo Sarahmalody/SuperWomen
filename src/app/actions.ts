@@ -49,14 +49,14 @@ export async function assessRisk(prevState: any, formData: FormData) {
 }
 
 const followSchema = z.object({
-  movementData: z.string().min(1, "Movement data cannot be empty."),
+  liveLocationUrl: z.string().url("Please enter a valid URL."),
   typicalRoute: z.string().min(1, "Typical route cannot be empty."),
 });
 
 export async function checkFollowing(prevState: any, formData: FormData) {
   try {
     const validatedFields = followSchema.safeParse({
-      movementData: formData.get("movementData"),
+      liveLocationUrl: formData.get("liveLocationUrl"),
       typicalRoute: formData.get("typicalRoute"),
     });
 

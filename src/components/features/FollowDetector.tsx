@@ -7,6 +7,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, Footprints, Loader2, CheckCircle, ShieldAlert } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 const initialState = {
   type: null,
@@ -14,12 +16,6 @@ const initialState = {
   errors: null,
   data: null,
 };
-
-const movementPlaceholder = `[
-  {"latitude": 34.0522, "longitude": -118.2437, "timestamp": "2023-10-27T10:00:00Z"},
-  {"latitude": 34.0525, "longitude": -118.2440, "timestamp": "2023-10-27T10:01:00Z"},
-  {"latitude": 34.0520, "longitude": -118.2445, "timestamp": "2023-10-27T10:05:00Z"}
-]`;
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -37,20 +33,23 @@ export default function FollowDetector() {
   return (
     <div className="space-y-4">
       <form action={formAction} className="space-y-4">
-        <div>
-          <Textarea
-            name="movementData"
-            placeholder={movementPlaceholder}
-            rows={5}
+        <div className="space-y-2">
+          <Label htmlFor="liveLocationUrl">Paste your live location URL</Label>
+          <Input
+            id="liveLocationUrl"
+            name="liveLocationUrl"
+            type="url"
+            placeholder="e.g., https://maps.app.goo.gl/..."
             required
-            className="font-code text-xs bg-background"
           />
-           {state?.errors?.movementData && (
-            <p className="text-sm text-destructive mt-1">{state.errors.movementData[0]}</p>
+           {state?.errors?.liveLocationUrl && (
+            <p className="text-sm text-destructive mt-1">{state.errors.liveLocationUrl[0]}</p>
           )}
         </div>
-        <div>
+        <div className="space-y-2">
+          <Label htmlFor="typicalRoute">Describe your typical route</Label>
           <Textarea
+            id="typicalRoute"
             name="typicalRoute"
             placeholder="e.g., 'I usually walk from my office on 5th Ave to the subway station on 42nd St, passing by the public library.'"
             rows={3}
