@@ -1,1 +1,6 @@
-// Flows will be imported for their side effects in this file.
+import { config } from 'dotenv';
+config();
+
+import '@/ai/flows/follow-detection.ts';
+import '@/ai/flows/distress-detection.ts';
+import '@/ai/flows/risk-assessment.ts';
