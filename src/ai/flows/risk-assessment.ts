@@ -12,9 +12,13 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const RiskAssessmentInputSchema = z.object({
+  latitude: z.number().describe('The latitude of the location.'),
+  longitude: z.number().describe('The longitude of the location.'),
   locationDescription: z
     .string()
-    .describe("A detailed description of the user's current location, including street names, landmarks, and any relevant observations."),
+    .describe(
+      "A detailed description of the user's current location, including street names, landmarks, and any relevant observations."
+    ),
 });
 
 export type RiskAssessmentInput = z.infer<typeof RiskAssessmentInputSchema>;
@@ -38,7 +42,9 @@ const RiskAssessmentOutputSchema = z.object({
 
 export type RiskAssessmentOutput = z.infer<typeof RiskAssessmentOutputSchema>;
 
-export async function getSafetyAdvice(input: RiskAssessmentInput): Promise<RiskAssessmentOutput> {
+export async function getSafetyAdvice(
+  input: RiskAssessmentInput
+): Promise<RiskAssessmentOutput> {
   return riskAssessmentFlow(input);
 }
 
@@ -48,10 +54,11 @@ const riskAssessmentPrompt = ai.definePrompt({
   output: {schema: RiskAssessmentOutputSchema},
   prompt: `You are a safety expert providing advice based on location risk assessment.
 
-  Analyze the following location description and provide tailored safety advice:
-  Location Description: {{{locationDescription}}}
+  Analyze the following location and provide tailored safety advice.
+  The location is at latitude: {{{latitude}}}, longitude: {{{longitude}}}.
+  User's description of the location: {{{locationDescription}}}
 
-  Consider factors such as crime rates, visibility, traffic, and any other relevant safety concerns.
+  Consider the user's description as the primary source of truth for immediate surroundings (e.g., "dimly lit", "crowded"). Use the coordinates for broader geographical context.
 
   Provide the output in JSON format:
   - riskLevel: (e.g., low, medium, high)
@@ -67,7 +74,7 @@ const riskAssessmentFlow = ai.defineFlow(
     inputSchema: RiskAssessmentInputSchema,
     outputSchema: RiskAssessmentOutputSchema,
   },
-  async input => {
+  async (input) => {
     const {output} = await riskAssessmentPrompt(input);
     return output!;
   }
