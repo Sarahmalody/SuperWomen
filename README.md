@@ -13,6 +13,7 @@
   </picture>
 </a>
 
+
 # Super Women
 
 This is a NextJS starter in Firebase Studio.
